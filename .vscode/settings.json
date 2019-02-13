@@ -1,0 +1,15 @@
+{
+    "files.exclude": {
+        ".git": true,
+        ".gitattributes": true,
+        ".gitconfig": true,
+        ".gitignore": true,
+        "**/.vs": true,
+        "**/.vscode": true,
+        "**/bin": true,
+        "**/build": true,
+        "**/target": true,
+        "Cargo.lock": true,
+        "Makefile": true
+    }
+}x
