@@ -6,3 +6,8 @@ edition = "2018"
 
 [dependencies]
 clap = "2"
+
+[profile.release]
+lto = true
+opt-level = 3
+panic = "abort"
