@@ -1,0 +1,7 @@
+* text=auto eol=lf
+
+*.json    text
+*.md      text
+*.rs      text
+*.toml    text
+Makefile  text
