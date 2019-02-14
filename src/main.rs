@@ -20,19 +20,6 @@ fn main() {
                     .required(true)
                     .multiple(false)
                     .index(1))
-                .arg(Arg::with_name("reformat")
-                    .long("pretty-print")
-                    .help("Format output to look nicer"))
-                .arg(Arg::with_name("inplace")
-                    .short("i")
-                    .long("in-place")
-                    .help("Writes content back to the same file after processing"))
-                .arg(Arg::with_name("nocomments")
-                    .long("no-comments")
-                    .help("Remove all comments"))
-                .arg(Arg::with_name("trim")
-                    .long("trim")
-                    .help("Trim leading and trailing spaces"))
                 .arg(Arg::with_name("section")
                     .short("s")
                     .long("section")
@@ -43,9 +30,9 @@ fn main() {
                     .long("key")
                     .takes_value(true)
                     .help("Key to show or replace"))
-                .arg(Arg::with_name("output")
-                    .short("o")
-                    .long("output")
+                .arg(Arg::with_name("print")
+                    .short("p")
+                    .long("print")
                     .help("Show filtered value only"))
                 .arg(Arg::with_name("delete")
                     .short("d")
@@ -55,17 +42,30 @@ fn main() {
                     .short("a")
                     .long("append")
                     .takes_value(true)
-                    .help("Specified entry or section will be appended whether it exists or not"))
+                    .help("Value will be appended"))
                 .arg(Arg::with_name("change")
                     .short("c")
                     .long("change")
                     .takes_value(true)
-                    .help("Specified entry or section will be changed if it exists"))
+                    .help("Value will be changed only if it exists"))
                 .arg(Arg::with_name("edit")
                     .short("e")
                     .long("edit")
                     .takes_value(true)
-                    .help("Specified entry or section will be change if it exists or added if it doesn't"))
+                    .help("Value will be changed if exists or added if it doesn't"))
+                .arg(Arg::with_name("reformat")
+                    .long("pretty-print")
+                    .help("Format output to look nicer"))
+                .arg(Arg::with_name("trim")
+                    .long("trim")
+                    .help("Trim leading and trailing spaces"))
+                .arg(Arg::with_name("nocomments")
+                    .long("no-comments")
+                    .help("Remove all comments"))
+                .arg(Arg::with_name("inplace")
+                    .short("i")
+                    .long("in-place")
+                    .help("Writes content back to the same file after processing"))
                 .arg(Arg::with_name("verbose")
                     .short("v")
                     .long("verbose")
@@ -85,15 +85,15 @@ fn main() {
     let find_section = args.value_of("section");
     let find_key = args.value_of("key");
 
-    let should_output = args.is_present("output");
+    let should_print  = args.is_present("print");
     let should_delete = args.is_present("delete");
     let should_append = args.value_of("append");
     let should_change = args.value_of("change");
-    let should_edit = args.value_of("edit");
+    let should_edit   = args.value_of("edit");
 
     let mut operation_count = 0;
+    if should_print            { operation_count += 1; }
     if should_delete           { operation_count += 1; }
-    if should_output           { operation_count += 1; }
     if should_append.is_some() { operation_count += 1; }
     if should_change.is_some() { operation_count += 1; }
     if should_edit.is_some()   { operation_count += 1; }
@@ -103,13 +103,13 @@ fn main() {
         std::process::exit(255);
     }
 
-    if should_output && exec_inplace {
-        eprintln!("error: cannot both output and replace in-place");
+    if should_print && exec_inplace {
+        eprintln!("error: cannot both print and replace in-place");
         std::process::exit(255);
     }
 
-    if should_output && (find_section.is_none() || find_key.is_none()) {
-        eprintln!("error: both section and key must be specified for output operation");
+    if should_print && (find_section.is_none() || find_key.is_none()) {
+        eprintln!("error: both section and key must be specified for print operation");
         std::process::exit(255);
     }
 
@@ -140,7 +140,7 @@ fn main() {
                     if find_section.is_some() || find_key.is_some() {
                         file.filter(find_section, find_key); //just filter stuff out
                     }
-                } else if should_output { //just show value
+                } else if should_print { //just show value
                     file.filter(find_section, find_key);
                     for line in file {
                         let content = line.get_content();
