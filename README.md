@@ -33,7 +33,7 @@ This project has the following goals:
 | `-v` | `--verbose`      |             | Sets the level of verbosity                            |
 | `-h` | `--help`         |             | Prints help information                                |
 | `-V` | `--version`      |             | Prints version information                             |
-|      |                  | `<file>`    | File to edit                                           |
+|      |                  | `[file]`    | File to process                                        |
 
 
 ### Examples ###
@@ -100,3 +100,10 @@ To remove all comments, one can use `--no-comments`.
 To do all those changes directly to a file, one can use `--in-place`.
 
     bin/inied --pretty-print --in-place  examples/my.cnf
+
+#### Chaining calls ####
+
+As `inied` supports reading from standard input and writing to standard output,
+multiple calls can be chained together.
+
+    bin/inied --section mysqld examples/my.cnf | bin/inied --pretty-print

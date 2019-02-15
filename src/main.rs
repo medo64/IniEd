@@ -15,11 +15,6 @@ fn main() {
                 .version(CARGO_VERSION)
                 .author(CARGO_AUTHORS)
                 .about("Editing of .ini files")
-                .arg(Arg::with_name("file")
-                    .help("File to edit")
-                    .required(true)
-                    .multiple(false)
-                    .index(1))
                 .arg(Arg::with_name("section")
                     .short("s")
                     .long("section")
@@ -71,6 +66,11 @@ fn main() {
                     .long("verbose")
                     .multiple(true)
                     .help("Sets the level of verbosity"))
+                .arg(Arg::with_name("filename")
+                    .help("File to process")
+                    .required(false)
+                    .multiple(false)
+                    .index(1))
                 .get_matches();
 
     let _show_notice = args.occurrences_of("verbose") >= 1;
@@ -129,81 +129,87 @@ fn main() {
     }
 
 
-    if let Some(file_name) = args.value_of("file") {
-        let file = IniFile::parse(file_name);
-        match file {
-            Ok(mut file) => {
-                if exec_nocomments { file.remove_comments(); }
-                if exec_trim { file.trim(); }
+    let file_name = args.value_of("filename");
 
-                if operation_count == 0 {
-                    if find_section.is_some() || find_key.is_some() {
-                        file.filter(find_section, find_key); //just filter stuff out
+    let file = IniFile::parse(file_name);
+    match file {
+        Ok(mut file) => {
+            if exec_nocomments { file.remove_comments(); }
+            if exec_trim { file.trim(); }
+
+            if operation_count == 0 {
+                if find_section.is_some() || find_key.is_some() {
+                    file.filter(find_section, find_key); //just filter stuff out
+                }
+            } else if should_print { //just show value
+                file.filter(find_section, find_key);
+                for line in file {
+                    let content = line.get_content();
+                    match content {
+                        IniContent::Entry(entry)   => { println!("{}", entry.get_value()); },
+                        _ => { },
                     }
-                } else if should_print { //just show value
-                    file.filter(find_section, find_key);
-                    for line in file {
+                }
+                std::process::exit(0); //no need for standard printout
+            } else if should_delete {
+                file.delete(find_section, find_key);
+            } else if should_append.is_some() {
+                file.edit(find_section.unwrap(), find_key.unwrap(), should_append.unwrap(), false, true);
+            } else if should_change.is_some() {
+                file.edit(find_section.unwrap(), find_key.unwrap(), should_change.unwrap(), true, false);
+            } else if should_edit.is_some() {
+                file.edit(find_section.unwrap(), find_key.unwrap(), should_edit.unwrap(), true, true);
+            }
+
+            if exec_reformat { file.reformat(); }
+
+            if exec_inplace {
+                match file.save(file_name) {
+                    Ok(_) => { },
+                    Err(err) => {
+                        match file_name {
+                            Some(file_name) => { eprintln!("error: cannot write file '{}': {}", file_name, err); },
+                            None            => { eprintln!("error: cannot write to output: {}", err); },
+                        }
+                        std::process::exit(2);
+                    },
+                }
+            } else { //final output
+                let mut line_number = 0;
+                let line_number_digit_count = (file.line_count() as f64).log10().ceil() as usize;
+                for line in file {
+                    if show_info {
+                        line_number += 1;
+                        match line_number_digit_count {
+                            1 => print!("{:1}", line_number),
+                            2 => print!("{:2}", line_number),
+                            3 => print!("{:3}", line_number),
+                            4 => print!("{:4}", line_number),
+                            5 => print!("{:5}", line_number),
+                            _ => print!("{:6}", line_number),
+                        }
+                    }
+                    if show_debug {
                         let content = line.get_content();
                         match content {
-                            IniContent::Entry(entry)   => { println!("{}", entry.get_value()); },
-                            _ => { },
+                            IniContent::Section(_) => { print!(" S"); },
+                            IniContent::Entry(_)   => { print!(" E"); },
+                            IniContent::Comment(_) => { print!(" C"); },
+                            IniContent::Other(_)   => { print!(" O"); },
                         }
                     }
-                    std::process::exit(0); //no need for standard printout
-                } else if should_delete {
-                    file.delete(find_section, find_key);
-                } else if should_append.is_some() {
-                    file.edit(find_section.unwrap(), find_key.unwrap(), should_append.unwrap(), false, true);
-                } else if should_change.is_some() {
-                    file.edit(find_section.unwrap(), find_key.unwrap(), should_change.unwrap(), true, false);
-                } else if should_edit.is_some() {
-                    file.edit(find_section.unwrap(), find_key.unwrap(), should_edit.unwrap(), true, true);
+                    if show_info || show_debug { print!(": "); }
+                    println!("{}", line.get_content());
                 }
-
-                if exec_reformat { file.reformat(); }
-
-                if exec_inplace {
-                    match file.save(file_name) {
-                        Ok(_) => { },
-                        Err(err) => {
-                            eprintln!("error: cannot write file '{}': {}", file_name, err);
-                            std::process::exit(2);
-                        },
-                    }
-                } else { //final output
-                    let mut line_number = 0;
-                    let line_number_digit_count = (file.line_count() as f64).log10().ceil() as usize;
-                    for line in file {
-                        if show_info {
-                            line_number += 1;
-                            match line_number_digit_count {
-                                1 => print!("{:1}", line_number),
-                                2 => print!("{:2}", line_number),
-                                3 => print!("{:3}", line_number),
-                                4 => print!("{:4}", line_number),
-                                5 => print!("{:5}", line_number),
-                                _ => print!("{:6}", line_number),
-                            }
-                        }
-                        if show_debug {
-                            let content = line.get_content();
-                            match content {
-                                IniContent::Section(_) => { print!(" S"); },
-                                IniContent::Entry(_)   => { print!(" E"); },
-                                IniContent::Comment(_) => { print!(" C"); },
-                                IniContent::Other(_)   => { print!(" O"); },
-                            }
-                        }
-                        if show_info || show_debug { print!(": "); }
-                        println!("{}", line.get_content());
-                    }
-                    std::process::exit(0);
-                }
-            },
-            Err(err) => {
-                eprintln!("error: cannot read file '{}': {}", file_name, err);
-                std::process::exit(1);
-            },
-        }
+                std::process::exit(0);
+            }
+        },
+        Err(err) => {
+            match file_name {
+                Some(file_name) => { eprintln!("error: cannot read file '{}': {}", file_name, err); },
+                None            => { eprintln!("error: cannot read from input: {}", err); },
+            }
+            std::process::exit(1);
+        },
     }
 }

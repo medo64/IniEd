@@ -3,6 +3,7 @@ use std::fs::File;
 use std::io;
 use std::io::BufRead;
 use std::io::Error;
+use std::io::Read;
 use std::io::Write;
 
 #[cfg(test)]
@@ -22,12 +23,14 @@ impl IniFile {
 }
 
 impl IniFile {
-    pub fn parse(file_name: &str) -> Result<IniFile, Error> {
-        let file = File::open(file_name)?;
-        let mut reader = io::BufReader::new(file);
+    pub fn parse(file_name: Option<&str>) -> Result<IniFile, Error> {
+        let input = match file_name {
+            Some(file_name) => Box::new(File::open(file_name)?) as Box<Read>,
+            None => Box::new(io::stdin()) as Box<Read>,
+        };
+        let mut reader = io::BufReader::new(input);
 
         let mut lines = Vec::new();
-
         let mut input_line = String::new();
         while reader.read_line(&mut input_line).is_ok() {
             if input_line.len() == 0 { break; }
@@ -55,11 +58,16 @@ impl IniFile {
         Ok(IniFile::new(lines))
     }
 
-    pub fn save(&self, file_name: &str) -> Result<(), Error> {
-        let mut file = File::create(file_name)?;
+    pub fn save(&self, file_name: Option<&str>) -> Result<(), Error> {
+        let output = match file_name {
+            Some(file_name) => Box::new(File::create(file_name)?) as Box<Write>,
+            None => Box::new(io::stdout()) as Box<Write>,
+        };
+        let mut writer = io::BufWriter::new(output);
+
         for line in &self.lines {
-            file.write(line.content.to_string().as_bytes())?;
-            file.write(line.line_ending.as_bytes())?;
+            writer.write(line.content.to_string().as_bytes())?;
+            writer.write(line.line_ending.as_bytes())?;
         }
         Ok(())
     }
