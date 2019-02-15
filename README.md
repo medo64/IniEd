@@ -21,7 +21,7 @@ This project has the following goals:
 |------|------------------|-------------|--------------------------------------------------------|
 | `-s` | `--section`      | `<section>` | Section to show or replace                             |
 | `-k` | `--key`          | `<key>`     | Key to show or replace                                 |
-| `-p` | `--print`        |             | Show filtered value only                               |
+| `-p` | `--print`        |             | Show value only                                        |
 | `-d` | `--delete`       |             | Specified entry or section will be deleted             |
 | `-a` | `--append`       | `<value>`   | Value will be appended                                 |
 | `-c` | `--change`       | `<value>`   | Value will be changed only if it exists                |
@@ -106,4 +106,4 @@ To do all those changes directly to a file, one can use `--in-place`.
 As `inied` supports reading from standard input and writing to standard output,
 multiple calls can be chained together.
 
-    bin/inied --section mysqld examples/my.cnf | bin/inied --pretty-print
+    bin/inied --section mysqld examples/my.cnf | bin/inied --key key_buffer | bin/inied --print

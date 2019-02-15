@@ -141,10 +141,8 @@ impl IniFile {
     }
 
     pub fn filter(&mut self, filter_section: Option<&str>, filter_key: Option<&str>) {
-        assert!(filter_section.is_some() || filter_key.is_some());
-
         if self.lines.len() > 0 {
-            let mut is_section_matched = false;
+            let mut is_section_matched = filter_section.is_none(); //match if no section
             let mut lines = Vec::new();
             for line in self.lines.clone() {
                 match line.clone().content {

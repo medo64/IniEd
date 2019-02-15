@@ -28,7 +28,7 @@ fn main() {
                 .arg(Arg::with_name("print")
                     .short("p")
                     .long("print")
-                    .help("Show filtered value only"))
+                    .help("Show value only"))
                 .arg(Arg::with_name("delete")
                     .short("d")
                     .long("delete")
@@ -105,11 +105,6 @@ fn main() {
 
     if should_print && exec_inplace {
         eprintln!("error: cannot both print and replace in-place");
-        std::process::exit(255);
-    }
-
-    if should_print && (find_section.is_none() || find_key.is_none()) {
-        eprintln!("error: both section and key must be specified for print operation");
         std::process::exit(255);
     }
 
