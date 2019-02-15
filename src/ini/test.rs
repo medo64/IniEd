@@ -1,3 +1,22 @@
+impl IniComment {
+    fn create(prelude: &str, text: &str) -> IniComment {
+        IniComment {
+            prefix:   String::new(),
+            prelude:  prelude.to_string(),
+            text:     text.to_string(),
+        }
+    }
+}
+
+impl IniOther {
+    fn create(text: &str) -> IniOther {
+        IniOther {
+            text:     text.to_string(),
+        }
+    }
+}
+
+
 #[test]
 fn parse_section_basic() {
     let parsed = super::IniLine::new("[Test]", "");

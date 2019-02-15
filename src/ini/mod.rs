@@ -726,14 +726,6 @@ impl IniComment {
             text:    text.into_iter().collect(),
         }
     }
-
-    fn create(prelude: &str, text: &str) -> IniComment {
-        IniComment {
-            prefix:   String::new(),
-            prelude:  prelude.to_string(),
-            text:     text.to_string(),
-        }
-    }
 }
 
 impl IniComment {
@@ -770,12 +762,6 @@ impl IniOther {
     fn new(text: &Vec<char>) -> IniOther {
         IniOther {
             text: text.into_iter().collect(),
-        }
-    }
-
-    fn create(text: &str) -> IniOther {
-        IniOther {
-            text:     text.to_string(),
         }
     }
 
