@@ -449,9 +449,15 @@ impl IniLine {
                         } else {
                             separator.push(c);
                         }
-                    } else {
+                    } else if separator.contains(&'=') { //any non-whitespace after separator is value
                         value.push(c);
                         state = State::Value;
+                    } else {
+                        suffix.append(&mut key);
+                        suffix.append(&mut separator);
+                        suffix.push(c);
+                        kind = Kind::Other;
+                        state = State::Suffix;
                     }
                 },
 

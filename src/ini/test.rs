@@ -403,6 +403,18 @@ fn parse_other_unfinished_entry_with_spaces() {
     }
 }
 
+#[test]
+fn parse_other_looks_like_entry() {
+    let parsed = super::IniLine::new("Something Else", "");
+    match parsed.content {
+        super::IniContent::Other(other) => {
+            assert_eq!("Something Else", other.to_string());
+            assert_eq!("Something Else", other.text);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
 
 #[test]
 fn pretty_print_adds_empty_line() {
