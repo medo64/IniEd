@@ -1,6 +1,6 @@
-impl IniComment {
-    fn create(prelude: &str, text: &str) -> IniComment {
-        IniComment {
+impl super::IniComment {
+    fn create(prelude: &str, text: &str) -> super::IniComment {
+        super::IniComment {
             prefix:   String::new(),
             prelude:  prelude.to_string(),
             text:     text.to_string(),
@@ -8,9 +8,9 @@ impl IniComment {
     }
 }
 
-impl IniOther {
-    fn create(text: &str) -> IniOther {
-        IniOther {
+impl super::IniOther {
+    fn create(text: &str) -> super::IniOther {
+        super::IniOther {
             text:     text.to_string(),
         }
     }
