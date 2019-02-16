@@ -35,6 +35,13 @@ This project has the following goals:
 | `-V` | `--version`      |             | Prints version information                             |
 |      |                  | `[file]`    | File to process                                        |
 
+| Exit code | Description        |
+|-----------|--------------------|
+| 0         | Success            |
+| 1         | Input read error   |
+| 2         | Output write error |
+| 255       | Argument error     |
+
 
 ### Examples ###
 
