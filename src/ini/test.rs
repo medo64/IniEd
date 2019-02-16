@@ -142,6 +142,8 @@ fn parse_entry_empty() {
     match parsed.content {
         super::IniContent::Entry(entry) => {
             assert_eq!("Key=", entry.to_string());
+            assert_eq!("", entry.get_value());
+            assert_eq!("", entry.get_value_unquoted());
             assert_eq!("", entry.prefix);
             assert_eq!("Key", entry.key);
             assert_eq!("=", entry.separator);
@@ -158,6 +160,8 @@ fn parse_entry_separator_with_spaces() {
     match parsed.content {
         super::IniContent::Entry(entry) => {
             assert_eq!("Key = Value", entry.to_string());
+            assert_eq!("Value", entry.get_value());
+            assert_eq!("Value", entry.get_value_unquoted());
             assert_eq!("", entry.prefix);
             assert_eq!("Key", entry.key);
             assert_eq!(" = ", entry.separator);
@@ -174,6 +178,8 @@ fn parse_entry_double_equals() {
     match parsed.content {
         super::IniContent::Entry(entry) => {
             assert_eq!("Key = =Value", entry.to_string());
+            assert_eq!("=Value", entry.get_value());
+            assert_eq!("=Value", entry.get_value_unquoted());
             assert_eq!("", entry.prefix);
             assert_eq!("Key", entry.key);
             assert_eq!(" = ", entry.separator);
@@ -190,6 +196,8 @@ fn parse_entry_double_inner_space() {
     match parsed.content {
         super::IniContent::Entry(entry) => {
             assert_eq!("Key = Value With Spaces  ", entry.to_string());
+            assert_eq!("Value With Spaces", entry.get_value());
+            assert_eq!("Value With Spaces", entry.get_value_unquoted());
             assert_eq!("", entry.prefix);
             assert_eq!("Key", entry.key);
             assert_eq!(" = ", entry.separator);
@@ -207,6 +215,8 @@ fn parse_entry_reformatted() {
     match parsed.content {
         super::IniContent::Entry(entry) => {
             assert_eq!("Key=Value", entry.to_string());
+            assert_eq!("Value", entry.get_value());
+            assert_eq!("Value", entry.get_value_unquoted());
             assert_eq!("", entry.prefix);
             assert_eq!("Key", entry.key);
             assert_eq!("=", entry.separator);
@@ -224,10 +234,277 @@ fn parse_entry_trimmed() {
     match parsed.content {
         super::IniContent::Entry(entry) => {
             assert_eq!("Key = Value", entry.to_string());
+            assert_eq!("Value", entry.get_value());
+            assert_eq!("Value", entry.get_value_unquoted());
             assert_eq!("", entry.prefix);
             assert_eq!("Key", entry.key);
             assert_eq!(" = ", entry.separator);
             assert_eq!("Value", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_double_quoted() {
+    let parsed = super::IniLine::new("    Key = \"Value\"    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"Value\"", entry.to_string());
+            assert_eq!("\"Value\"", entry.get_value());
+            assert_eq!("Value", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"Value\"", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted() {
+    let parsed = super::IniLine::new("    Key = 'Value'    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='Value'", entry.to_string());
+            assert_eq!("'Value'", entry.get_value());
+            assert_eq!("Value", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'Value'", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_double_quoted_with_spaces() {
+    let parsed = super::IniLine::new("    Key = \"  Value  Spaced  \"    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"  Value  Spaced  \"", entry.to_string());
+            assert_eq!("\"  Value  Spaced  \"", entry.get_value());
+            assert_eq!("  Value  Spaced  ", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"  Value  Spaced  \"", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted_with_spaces() {
+    let parsed = super::IniLine::new("    Key = '  Value  Spaced  '    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='  Value  Spaced  '", entry.to_string());
+            assert_eq!("'  Value  Spaced  '", entry.get_value());
+            assert_eq!("  Value  Spaced  ", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'  Value  Spaced  '", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_double_quoted_with_escaped_chars() {
+    let parsed = super::IniLine::new("    Key = \"  Value \\t \\n \\r \\\" \\' Spaced  \"    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"  Value \\t \\n \\r \\\" \\' Spaced  \"", entry.to_string());
+            assert_eq!("\"  Value \\t \\n \\r \\\" \\' Spaced  \"", entry.get_value());
+            assert_eq!("  Value \t \n \r \" ' Spaced  ", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"  Value \\t \\n \\r \\\" \\' Spaced  \"", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted_with_escaped_chars() {
+    let parsed = super::IniLine::new("    Key = '  Value \\t \\n \\r \\\" \\' Spaced  '    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='  Value \\t \\n \\r \\\" \\' Spaced  '", entry.to_string());
+            assert_eq!("'  Value \\t \\n \\r \\\" \\' Spaced  '", entry.get_value());
+            assert_eq!("  Value \t \n \r \" ' Spaced  ", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'  Value \\t \\n \\r \\\" \\' Spaced  '", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_double_quoted_with_invalid_escape() {
+    let parsed = super::IniLine::new("    Key = \"  Value \\q Spaced  \"    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"  Value \\q Spaced  \"", entry.to_string());
+            assert_eq!("\"  Value \\q Spaced  \"", entry.get_value());
+            assert_eq!("  Value \\q Spaced  ", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"  Value \\q Spaced  \"", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted_with_invalid_escape() {
+    let parsed = super::IniLine::new("    Key = '  Value \\q Spaced  '    ", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='  Value \\q Spaced  '", entry.to_string());
+            assert_eq!("'  Value \\q Spaced  '", entry.get_value());
+            assert_eq!("  Value \\q Spaced  ", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'  Value \\q Spaced  '", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted_double_inner() {
+    let parsed = super::IniLine::new("Key='Something '' Else'", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='Something '' Else'", entry.to_string());
+            assert_eq!("'Something '' Else'", entry.get_value());
+            assert_eq!("Something ' Else", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'Something '' Else'", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_double_quoted_double_inner() {
+    let parsed = super::IniLine::new("Key=\"Something \"\" Else\"", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"Something \"\" Else\"", entry.to_string());
+            assert_eq!("\"Something \"\" Else\"", entry.get_value());
+            assert_eq!("Something \" Else", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"Something \"\" Else\"", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted_stray_quote() {
+    let parsed = super::IniLine::new("Key='Give ' Up'", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='Give ' Up'", entry.to_string());
+            assert_eq!("'Give ' Up'", entry.get_value());
+            assert_eq!("'Give ' Up'", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'Give ' Up'", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_single_quoted_no_escape() {
+    let parsed = super::IniLine::new("Key='No \"\" Change'", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key='No \"\" Change'", entry.to_string());
+            assert_eq!("'No \"\" Change'", entry.get_value());
+            assert_eq!("No \"\" Change", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("'No \"\" Change'", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+
+#[test]
+fn parse_entry_double_quoted_no_escape() {
+    let parsed = super::IniLine::new("Key=\"No '' Change\"", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"No '' Change\"", entry.to_string());
+            assert_eq!("\"No '' Change\"", entry.get_value());
+            assert_eq!("No '' Change", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"No '' Change\"", entry.value);
+            assert_eq!("", entry.suffix);
+        },
+        _ => panic!("failed match"),
+    }
+}
+#[test]
+fn parse_entry_double_quoted_stray_quote() {
+    let parsed = super::IniLine::new("Key=\"Give \" Up\"", "");
+    let parsed = parsed.reformatted("");
+    match parsed.content {
+        super::IniContent::Entry(entry) => {
+            assert_eq!("Key=\"Give \" Up\"", entry.to_string());
+            assert_eq!("\"Give \" Up\"", entry.get_value());
+            assert_eq!("\"Give \" Up\"", entry.get_value_unquoted());
+            assert_eq!("", entry.prefix);
+            assert_eq!("Key", entry.key);
+            assert_eq!("=", entry.separator);
+            assert_eq!("\"Give \" Up\"", entry.value);
             assert_eq!("", entry.suffix);
         },
         _ => panic!("failed match"),

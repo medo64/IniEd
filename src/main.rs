@@ -29,6 +29,10 @@ fn main() {
                     .short("p")
                     .long("print")
                     .help("Show value only"))
+                .arg(Arg::with_name("printraw")
+                    .short("r")
+                    .long("print-raw")
+                    .help("Show value without removing quotes"))
                 .arg(Arg::with_name("delete")
                     .short("d")
                     .long("delete")
@@ -85,25 +89,27 @@ fn main() {
     let find_section = args.value_of("section");
     let find_key = args.value_of("key");
 
-    let should_print  = args.is_present("print");
-    let should_delete = args.is_present("delete");
-    let should_append = args.value_of("append");
-    let should_change = args.value_of("change");
-    let should_edit   = args.value_of("edit");
+    let should_print    = args.is_present("print");
+    let should_printraw = args.is_present("printraw");
+    let should_delete   = args.is_present("delete");
+    let should_append   = args.value_of("append");
+    let should_change   = args.value_of("change");
+    let should_edit     = args.value_of("edit");
 
     let mut operation_count = 0;
     if should_print            { operation_count += 1; }
+    if should_printraw         { operation_count += 1; }
     if should_delete           { operation_count += 1; }
     if should_append.is_some() { operation_count += 1; }
     if should_change.is_some() { operation_count += 1; }
     if should_edit.is_some()   { operation_count += 1; }
     let operation_count = operation_count;
     if operation_count > 1 {
-        eprintln!("error: only one operation (delete, append, change, edit) is allowed");
+        eprintln!("error: only one operation (delete, append, change, edit, or print) is allowed");
         std::process::exit(255);
     }
 
-    if should_print && exec_inplace {
+    if (should_print || should_printraw) && exec_inplace {
         eprintln!("error: cannot both print and replace in-place");
         std::process::exit(255);
     }
@@ -136,12 +142,18 @@ fn main() {
                 if find_section.is_some() || find_key.is_some() {
                     file.filter(find_section, find_key); //just filter stuff out
                 }
-            } else if should_print { //just show value
+            } else if should_print || should_printraw { //just show value
                 file.filter(find_section, find_key);
                 for line in file {
                     let content = line.get_content();
                     match content {
-                        IniContent::Entry(entry)   => { println!("{}", entry.get_value()); },
+                        IniContent::Entry(entry)   => {
+                            if should_printraw {
+                                println!("{}", entry.get_value());
+                            } else {
+                                println!("{}", entry.get_value_unquoted());
+                            }
+                        },
                         _ => { },
                     }
                 }

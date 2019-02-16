@@ -22,6 +22,7 @@ This project has the following goals:
 | `-s` | `--section`      | `<section>` | Section to show or replace                             |
 | `-k` | `--key`          | `<key>`     | Key to show or replace                                 |
 | `-p` | `--print`        |             | Show value only                                        |
+| `-r` | `--print-raw`    |             | Value will not have quotes removed upon printing       |
 | `-d` | `--delete`       |             | Specified entry or section will be deleted             |
 | `-a` | `--append`       | `<value>`   | Value will be appended                                 |
 | `-c` | `--change`       | `<value>`   | Value will be changed only if it exists                |

@@ -714,6 +714,37 @@ impl IniEntry {
     pub fn get_value(&self) -> &str {
         &self.value
     }
+
+    pub fn get_value_unquoted(&self) -> String {
+        let text = self.get_value().trim();
+
+        enum State { Quote, Text, Escape }
+        let mut state = State::Quote;
+        let mut quote_char = '\0';
+
+        let mut new_text = Vec::new();
+        for c in text.chars() {
+            match &state {
+                State::Quote  if quote_char == '\0' && (c == '"' || c == '\'') => { quote_char = c; state = State::Text; },
+                State::Quote  if quote_char != '\0' && c == quote_char         => { new_text.push(c); state = State::Text; }, //to handle double quotes
+                State::Quote  if quote_char == '\0'                            => { new_text.push(c); state = State::Text; }, //non-quoted text
+
+                State::Text   if c == '\\'             => { state = State::Escape; },
+                State::Text   if c == quote_char       => { state = State::Quote; },
+                State::Text                            => { new_text.push(c); },
+                State::Escape if c == '\\'             => { new_text.push('\\'); state = State::Text; },
+                State::Escape if c == '\''             => { new_text.push('\''); state = State::Text; },
+                State::Escape if c == '"'              => { new_text.push('"');  state = State::Text; },
+                State::Escape if c == 'n'              => { new_text.push('\n'); state = State::Text; },
+                State::Escape if c == 'r'              => { new_text.push('\r'); state = State::Text; },
+                State::Escape if c == 't'              => { new_text.push('\t'); state = State::Text; },
+                State::Escape                          => { new_text.push('\\'); new_text.push(c); state = State::Text; }, //unrecognized escape
+
+                _ => { return text.to_string(); } //on unexpected result just return the original string
+            }
+        }
+        return new_text.into_iter().collect();
+    }
 }
 
 impl fmt::Display for IniEntry {
