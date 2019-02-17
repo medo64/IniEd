@@ -6,11 +6,14 @@ ifeq ($(PREFIX),)
     PREFIX := /usr/local/
 endif
 
+CARGO_PLATFORM := $(shell getconf LONG_BIT | sed "s/32/i686-unknown-linux-gnu/" | sed "s/64/x86_64-unknown-linux-gnu/")
+DEB_BUILD_ARCH := $(shell getconf LONG_BIT | sed "s/32/i386/" | sed "s/64/amd64/")
+
 
 SOURCE_LIST := Cargo.lock Cargo.toml LICENSE.md Makefile README.md src/
 
 
-.PHONY: all clean distclean install uninstall dist release debug
+.PHONY: all clean distclean install uninstall dist release debug package
 
 
 all: release
@@ -43,11 +46,34 @@ dist: release
 
 
 release: src/main.rs
+	@echo "Building for $(CARGO_PLATFORM)"
 	@mkdir -p bin/
-	@cargo build --release --target-dir build/
-	@cp build/release/inied bin/inied
+	@cargo build --release --quiet --target $(CARGO_PLATFORM) --target-dir build/
+	@cp build/$(CARGO_PLATFORM)/release/inied bin/inied
 
 debug: src/main.rs
-	@cargo build --target-dir build
+	@echo "Building for $(CARGO_PLATFORM)"
+	@cargo build --target $(CARGO_PLATFORM) --target-dir build
 	@mkdir -p bin/
-	@cp build/debug/inied bin/inied
+	@cp build/$(CARGO_PLATFORM)/debug/inied bin/inied
+
+
+package: release
+	@echo "Packaging for $(DEB_BUILD_ARCH)"
+	@$(eval DIST_NAME = $(shell bin/inied -s package -k name -p Cargo.toml))
+	@$(eval DIST_VERSION = $(shell bin/inied -s package -k version -p Cargo.toml))
+	@$(eval PACKAGE_NAME = inied_$(DIST_VERSION)_$(DEB_BUILD_ARCH))
+	@$(eval PACKAGE_DIR = /tmp/$(PACKAGE_NAME)/)
+	-@$(RM) -r $(PACKAGE_DIR)/
+	@mkdir $(PACKAGE_DIR)/
+	@cp -r package/deb/DEBIAN $(PACKAGE_DIR)/
+	@sed -i "s/MAJOR.MINOR/$(DIST_VERSION)/" $(PACKAGE_DIR)/DEBIAN/control
+	@sed -i "s/ARCHITECTURE/$(DEB_BUILD_ARCH)/" $(PACKAGE_DIR)/DEBIAN/control
+	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
+	@find $(PACKAGE_DIR)/ -type f -exec chmod 644 {} +
+	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
+	@install -d $(PACKAGE_DIR)/usr/local/bin/
+	@install bin/inied $(PACKAGE_DIR)/usr/local/bin/
+	@dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
+	@cp /tmp/$(PACKAGE_NAME).deb dist/
+	@$(RM) -r $(PACKAGE_DIR)/

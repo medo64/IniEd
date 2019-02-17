@@ -1,0 +1,11 @@
+#!/bin/bash
+
+if [ "$1" == "remove" ]
+then
+    if [ -f "/usr/local/bin/inied" ]
+    then
+        rm "/usr/local/bin/inied"
+    fi
+fi
+
+exit 0

@@ -1,0 +1,9 @@
+Package:        IniEd
+Version:        MAJOR.MINOR
+Architecture:   ARCHITECTURE
+Maintainer:     Josip Medved <jmedved@jmedved.com>
+Homepage:       https://www.medo64.com/inied/
+Description:    Command line .ini file editor.
+Section:        utils
+Priority:       optional
+Depends:        gnupg2
