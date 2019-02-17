@@ -24,6 +24,7 @@ clean:
 	-@$(RM) -r build/
 
 distclean: clean
+	-@$(RM) -r dist/
 	-@$(RM) -r target/
 
 
@@ -35,9 +36,9 @@ uninstall: $(DESTDIR)/$(PREFIX)/bin/inied
 	@sudo $(RM) $(DESTDIR)/$(PREFIX)/bin/inied
 
 dist: release
-	@$(RM) -r build/dist/
 	@$(eval DIST_NAME = $(shell bin/inied -s package -k name -p Cargo.toml))
 	@$(eval DIST_VERSION = $(shell bin/inied -s package -k version -p Cargo.toml))
+	@$(RM) -r build/dist/
 	@mkdir -p build/dist/$(DIST_NAME)-$(DIST_VERSION)/
 	@cp -r $(SOURCE_LIST) build/dist/$(DIST_NAME)-$(DIST_VERSION)/
 	@tar -cz -C build/dist/ -f build/dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz $(DIST_NAME)-$(DIST_VERSION)/
