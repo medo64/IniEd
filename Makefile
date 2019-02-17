@@ -1,5 +1,9 @@
 ifeq (, $(shell which cargo))
-$(error "No 'cargo' in path, consider installing rust")
+    $(error "No 'cargo' in path, consider installing rust")
+endif
+
+ifeq ($(PREFIX),)
+    PREFIX := /usr/local/
 endif
 
 
@@ -18,11 +22,11 @@ distclean: clean
 
 
 install: bin/inied
-	@sudo cp bin/inied /usr/local/bin/inied
-	@sudo chmod 755 /usr/local/bin/inied
+	@sudo install -d $(DESTDIR)/$(PREFIX)/bin/
+	@sudo install bin/inied $(DESTDIR)/$(PREFIX)/bin/
 
-uninstall: /usr/local/bin/inied
-	@sudo $(RM) /usr/local/bin/inied
+uninstall: $(DESTDIR)/$(PREFIX)/bin/inied
+	@sudo $(RM) $(DESTDIR)/$(PREFIX)/bin/inied
 
 
 release: src/main.rs
