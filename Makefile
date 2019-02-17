@@ -59,7 +59,7 @@ debug: src/main.rs
 	@cp build/$(CARGO_PLATFORM)/debug/inied bin/inied
 
 
-package: release
+package: dist
 	@echo "Packaging for $(DEB_BUILD_ARCH)"
 	@$(eval DIST_NAME = $(shell bin/inied -s package -k name -p Cargo.toml))
 	@$(eval DIST_VERSION = $(shell bin/inied -s package -k version -p Cargo.toml))
