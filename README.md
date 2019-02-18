@@ -50,68 +50,68 @@ This project has the following goals:
 
 To show just the value, we need to specify `--section`, `--key`, and `--print`.
 
-    bin/inied --section mysqld --key key_buffer --print  examples/my.cnf
+    inied --section mysqld --key key_buffer --print  examples/my.cnf
 
 #### Editing value ####
 
 To edit key to a particular value, you need to specify `--section`, `--key`, and
 `--edit`. If value is not present it will be appended to the end of section.
 
-    bin/inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
+    inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
 
 #### Changing value ####
 
 To change key to a particular value, you need to specify `--section`, `--key`,
 and `--change`. If value is not present, nothing will happen.
 
-    bin/inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
+    inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
 
 #### Appending value ####
 
 To append key with a particular value, you need to specify `--section`, `--key`,
 and `--append`. Value will be appended to the end of section.
 
-    bin/inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
+    inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
 
 #### Deleting key ####
 
 To delete the key, one has to specify `--section`, `key`, and `--delete`.
 
-    bin/inied --section mysqld --key key_buffer --delete  examples/my.cnf
+    inied --section mysqld --key key_buffer --delete  examples/my.cnf
 
 #### Deleting section ####
 
 To delete the whole section, one has to specify only `--section` and `--delete`.
 
-    bin/inied --section mysqld --delete  examples/my.cnf
+    inied --section mysqld --delete  examples/my.cnf
 
 #### Showing section ####
 
 To show a single section, one has to specify only `--section`.
 
-    bin/inied --section mysqld  examples/my.cnf
+    inied --section mysqld  examples/my.cnf
 
 #### Pretty print ####
 
 To clean up output, one can use `--pretty-print`.
 
-    bin/inied --pretty-print  examples/my.cnf
+    inied --pretty-print  examples/my.cnf
 
 #### Removing comments ####
 
 To remove all comments, one can use `--no-comments`.
 
-    bin/inied --no-comments  examples/my.cnf
+    inied --no-comments  examples/my.cnf
 
 #### In-place changes ####
 
 To do all those changes directly to a file, one can use `--in-place`.
 
-    bin/inied --pretty-print --in-place  examples/my.cnf
+    inied --pretty-print --in-place  examples/my.cnf
 
 #### Chaining calls ####
 
 As `inied` supports reading from standard input and writing to standard output,
 multiple calls can be chained together.
 
-    bin/inied --section mysqld examples/my.cnf | bin/inied --key key_buffer | bin/inied --print
+    inied --section mysqld examples/my.cnf | inied --key key_buffer | inied --print
