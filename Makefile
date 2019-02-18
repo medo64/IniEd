@@ -73,8 +73,8 @@ package: dist
 	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
 	@find $(PACKAGE_DIR)/ -type f -exec chmod 644 {} +
 	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
-	@install -d $(PACKAGE_DIR)/usr/local/bin/
-	@install bin/inied $(PACKAGE_DIR)/usr/local/bin/
+	@install -d $(PACKAGE_DIR)/usr/bin/
+	@install bin/inied $(PACKAGE_DIR)/usr/bin/
 	@dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
 	@cp /tmp/$(PACKAGE_NAME).deb dist/
 	@$(RM) -r $(PACKAGE_DIR)/
