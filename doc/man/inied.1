@@ -1,0 +1,127 @@
+.\" Manpage for IniEd
+.\" Contact jmedved@jmedved.com to correct errors or typos.
+.TH INIED 1 "17 Feb 2019" "0.1.0" "inied man page"
+
+.SH NAME
+
+inied \- process .ini files
+
+
+.SH SYNOPSIS
+
+.ad l
+\fBinied \fR[ \fB--section \fIsection \fR] [ \fB--key \fIkey \fR] [ \fB--print \fR| \fB--print-raw \R| \fB--delete \fR| \fB--append \fIvalue \fR| \fB--change \fIvalue \fR| \fB--edit \fIvalue \fR] [ \fB--pretty-print \fR] [ \fB--trim \fR] [ \fB--no-comments \fR] [ \fB--in-place \fR] \fIfile\fR
+
+
+.SH DESCRIPTION
+Command line .ini file editor.
+
+
+.SH OPTIONS
+
+.TP
+\fB-s\fR, \fB--section \fIsection\fR
+Section to show or replace. If not specified, all sections are matched.
+
+.TP
+\fB-k\fR, \fB--key \fIkey\fR
+Key to show or replace. If not specified, all keys within matched secion are matched.
+
+.TP
+\fB-p\fR, \fB--print\fR
+Print value only. If value is enclosed in quotes, those will be removed upon printing.
+
+.TP
+\fB-r\fR, \fB--print-raw\fR
+Print value exactly how it's defined in file.
+
+.TP
+\fB-d\fR, \fB--delete\fR
+Matched value will be deleted. If \fI--key\fR is not specified, the whole section will be removed.
+
+.TP
+\fB-a\fR, \fB--append \fIvalue\fR
+Value to append onto a specified section. This will be done unconditionally, i.e. it might create duplicate values.
+
+.TP
+\fB-c\fR, \fB--change \fIvalue\fR
+Value of entry will be changed if it exists. If entry is not found in specified section, no change will be done.
+
+.TP
+\fB-e\fR, \fB--edit \fIvalue\fR
+Value will be edited in specified section. If value does not exist, one will be appended.
+
+.TP
+\fB--pretty-print\fR
+Output file will be made to look nicer. All lines that are not recognized as section, key/value entry, or comment will be removed.
+
+.TP
+\fB--trim\fR
+Extra spaces before and after section name, key, or value will be removed.
+
+.TP
+\fB--no-comments\fR
+Output file will not contain any comments.
+
+.TP
+\fB--in-place\fR
+All changes will be done directly on file instead of outputing them to standard out.
+
+.TP
+\fB-v\fR, \fB--verbose\fR
+Extra details will be written. Can be specified multiple times.
+
+.TP
+\fB-h\fR, \fB--help\fR
+Show help.
+
+.TP
+\fB-V\fR, \fB--version\fR
+Show version.
+
+
+.SH EXIT STATUS
+
+.TP
+\fB0\fR
+Success.
+
+.TP
+\fB1\fR
+Read error.
+
+.TP
+\fB2\fR
+Write error.
+
+.TP
+\fB255\fR
+Argument error.
+
+
+.SH EXAMPLES
+
+.TP
+\fBinied --section mysqld --key key_buffer --print  my.cnf\fR
+Print only one value from file (section mysqld and key key_buffer).
+
+.TP
+\fBinied --section mysqld --key key_buffer --edit 200M  my.cnf\fR
+Change value of key_buffer in section mysqld to 200M. If value doesn't exist, append the same to selected section.
+
+.TP
+\fBinied --section mysqld --key key_buffer --delete  my.cnf\fR
+File is output with key_buffer removed from mysqld section.
+
+.TP
+\fBinied --pretty-print --no-comments  my.cnf\fR
+File is cleaned up and all comments are removed.
+
+.TP
+\fBinied --section mysqld my.cnf | inied --key key_buffer | inied --print
+If file is not specified, standard input is used and thus chaining is possible.
+
+
+.SH AUTHOR
+
+Josip Medved <jmedved@jmedved.com>

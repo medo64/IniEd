@@ -23,4 +23,6 @@ pXF542bTCX+bXOfPWbdl/mnIBRKdsNGNu/FbXTQ4gEmXQwmki5YL8kRwbBloxuH2
 =gY4j
 -----END PGP PUBLIC KEY BLOCK-----" | apt-key add -
 
+mandb -q
+
 exit 0

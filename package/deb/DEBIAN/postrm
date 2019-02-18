@@ -8,4 +8,6 @@ then
     fi
 fi
 
+mandb -q
+
 exit 0
