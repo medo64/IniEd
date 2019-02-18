@@ -2,9 +2,9 @@
 
 if [ "$1" == "remove" ]
 then
-    if [ -f "/usr/local/bin/inied" ]
+    if [ -f "/usr/bin/inied" ]
     then
-        rm "/usr/local/bin/inied"
+        rm "/usr/bin/inied"
     fi
 fi
 
