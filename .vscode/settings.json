@@ -8,6 +8,7 @@
         "**/.vscode": true,
         "**/bin": true,
         "**/build": true,
+        "**/dist": true,
         "**/target": true,
         "Cargo.lock": true,
         "Makefile": true
