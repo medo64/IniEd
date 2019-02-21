@@ -47,6 +47,7 @@ dist: release
 	@tar -cz -C build/dist/ -f build/dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz $(DIST_NAME)-$(DIST_VERSION)/
 	@mkdir -p dist/
 	@mv build/dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz dist/
+	@echo Output at dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz
 
 
 release: src/main.rs
@@ -86,3 +87,4 @@ package: dist
 	@dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
 	@cp /tmp/$(PACKAGE_NAME).deb dist/
 	@$(RM) -r $(PACKAGE_DIR)/
+	@echo Output at dist/$(PACKAGE_NAME).deb
