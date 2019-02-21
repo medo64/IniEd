@@ -1,7 +1,3 @@
-ifeq (, $(shell which cargo))
-    $(error "No 'cargo' in path, consider installing rust")
-endif
-
 ifeq ($(PREFIX),)
     PREFIX := /usr/local/
 endif
@@ -54,12 +50,14 @@ dist: release
 
 
 release: src/main.rs
+	@command -v cargo >/dev/null 2>&1 || { echo >&2 "No 'cargo' in path, consider installing rust!"; exit 1; }
 	@echo "Building for $(CARGO_PLATFORM)"
 	@mkdir -p bin/
 	@cargo build --release --quiet --target $(CARGO_PLATFORM) --target-dir build/
 	@cp build/$(CARGO_PLATFORM)/release/inied bin/inied
 
 debug: src/main.rs
+	@command -v cargo >/dev/null 2>&1 || { echo >&2 "No 'cargo' in path, consider installing rust!"; exit 1; }
 	@echo "Building for $(CARGO_PLATFORM)"
 	@cargo build --target $(CARGO_PLATFORM) --target-dir build
 	@mkdir -p bin/
@@ -67,6 +65,7 @@ debug: src/main.rs
 
 
 package: dist
+	@command -v dpkg-deb >/dev/null 2>&1 || { echo >&2 "Package 'dpkg-deb' not installed!"; exit 1; }
 	@echo "Packaging for $(DEB_BUILD_ARCH)"
 	@$(eval DIST_NAME = $(shell bin/inied -s package -k name -p Cargo.toml))
 	@$(eval DIST_VERSION = $(shell bin/inied -s package -k version -p Cargo.toml))
