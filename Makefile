@@ -29,7 +29,7 @@ install: bin/inied
 	@sudo install bin/inied $(DESTDIR)/$(PREFIX)/bin/
 	@$(RM) -r build/man/
 	@mkdir -p build/man/
-	@gzip -c docs/man/inied.1 > build/man/inied.1.gz
+	@gzip -cn --best docs/man/inied.1 > build/man/inied.1.gz
 	@sudo install -m 644 build/man/inied.1.gz /usr/share/man/man1/
 	@sudo mandb -q
 
@@ -80,7 +80,7 @@ package: dist
 	@mkdir -p $(PACKAGE_DIR)/usr/share/doc/inied/
 	@cp LICENSE.md $(PACKAGE_DIR)/usr/share/doc/inied/copyright
 	@mkdir -p $(PACKAGE_DIR)/usr/share/man/man1/
-	@gzip -c --best docs/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
+	@gzip -cn --best docs/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
 	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
 	@find $(PACKAGE_DIR)/ -type f -exec chmod 644 {} +
 	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
