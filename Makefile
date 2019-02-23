@@ -77,6 +77,8 @@ package: dist
 	@cp -r package/deb/DEBIAN $(PACKAGE_DIR)/
 	@sed -i "s/MAJOR.MINOR/$(DIST_VERSION)/" $(PACKAGE_DIR)/DEBIAN/control
 	@sed -i "s/ARCHITECTURE/$(DEB_BUILD_ARCH)/" $(PACKAGE_DIR)/DEBIAN/control
+	@mkdir -p $(PACKAGE_DIR)/usr/share/doc/inied/
+	@cp LICENSE.md $(PACKAGE_DIR)/usr/share/doc/inied/copyright
 	@mkdir -p $(PACKAGE_DIR)/usr/share/man/man1/
 	@gzip -c --best docs/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
 	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
