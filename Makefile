@@ -44,7 +44,7 @@ dist: release
 	@$(RM) -r build/dist/
 	@mkdir -p build/dist/$(DIST_NAME)-$(DIST_VERSION)/
 	@cp -r $(SOURCE_LIST) build/dist/$(DIST_NAME)-$(DIST_VERSION)/
-	@tar -cz -C build/dist/ -f build/dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz $(DIST_NAME)-$(DIST_VERSION)/
+	@tar -cz -C build/dist/  --owner=0 --group=0 -f build/dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz $(DIST_NAME)-$(DIST_VERSION)/
 	@mkdir -p dist/
 	@mv build/dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz dist/
 	@echo Output at dist/$(DIST_NAME)-$(DIST_VERSION).tar.gz
@@ -84,7 +84,7 @@ package: dist
 	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
 	@install -d $(PACKAGE_DIR)/usr/bin/
 	@install bin/inied $(PACKAGE_DIR)/usr/bin/
-	@dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
+	@fakeroot dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
 	@cp /tmp/$(PACKAGE_NAME).deb dist/
 	@$(RM) -r $(PACKAGE_DIR)/
 	@echo Output at dist/$(PACKAGE_NAME).deb
