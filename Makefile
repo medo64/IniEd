@@ -6,7 +6,7 @@ CARGO_PLATFORM := $(shell getconf LONG_BIT | sed "s/32/i686-unknown-linux-gnu/" 
 DEB_BUILD_ARCH := $(shell getconf LONG_BIT | sed "s/32/i386/" | sed "s/64/amd64/")
 
 
-SOURCE_LIST := Cargo.lock Cargo.toml LICENSE.md Makefile README.md src/ docs/
+SOURCE_LIST := Cargo.lock Cargo.toml CHANGES.md LICENSE.md Makefile README.md src/ docs/
 
 
 .PHONY: all clean distclean install uninstall dist release debug package
@@ -79,6 +79,15 @@ package: dist
 	@sed -i "s/ARCHITECTURE/$(DEB_BUILD_ARCH)/" $(PACKAGE_DIR)/DEBIAN/control
 	@mkdir -p $(PACKAGE_DIR)/usr/share/doc/inied/
 	@cp LICENSE.md $(PACKAGE_DIR)/usr/share/doc/inied/copyright
+	@cp CHANGES.md build/changelog
+	@sed -i '/^$$/d' build/changelog
+	@sed -i '/## Release Notes ##/d' build/changelog
+	@sed -i '1{s/### \(.*\) \[.*/inied \(\1\) stable; urgency=low/}' build/changelog
+	@sed -i '/###/,$$d' build/changelog
+	@sed -i 's/\* \(.*\)/  \* \1/' build/changelog
+	@echo >> build/changelog
+	@echo ' -- Josip Medved <jmedved@jmedved.com>  $(shell date -R)' >> build/changelog
+	@gzip -cn --best build/changelog > $(PACKAGE_DIR)/usr/share/doc/inied/changelog.gz
 	@mkdir -p $(PACKAGE_DIR)/usr/share/man/man1/
 	@gzip -cn --best docs/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
 	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
