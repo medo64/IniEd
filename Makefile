@@ -84,6 +84,7 @@ package: dist
 	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
 	@install -d $(PACKAGE_DIR)/usr/bin/
 	@install bin/inied $(PACKAGE_DIR)/usr/bin/
+	@strip $(PACKAGE_DIR)/usr/bin/inied
 	@fakeroot dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
 	@cp /tmp/$(PACKAGE_NAME).deb dist/
 	@$(RM) -r $(PACKAGE_DIR)/
