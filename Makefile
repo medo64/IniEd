@@ -6,7 +6,7 @@ CARGO_PLATFORM := $(shell getconf LONG_BIT | sed "s/32/i686-unknown-linux-gnu/" 
 DEB_BUILD_ARCH := $(shell getconf LONG_BIT | sed "s/32/i386/" | sed "s/64/amd64/")
 
 
-SOURCE_LIST := Cargo.lock Cargo.toml LICENSE.md Makefile README.md src/ doc/
+SOURCE_LIST := Cargo.lock Cargo.toml LICENSE.md Makefile README.md src/ docs/
 
 
 .PHONY: all clean distclean install uninstall dist release debug package
@@ -29,7 +29,7 @@ install: bin/inied
 	@sudo install bin/inied $(DESTDIR)/$(PREFIX)/bin/
 	@$(RM) -r build/man/
 	@mkdir -p build/man/
-	@gzip -c doc/man/inied.1 > build/man/inied.1.gz
+	@gzip -c docs/man/inied.1 > build/man/inied.1.gz
 	@sudo install -m 644 build/man/inied.1.gz /usr/share/man/man1/
 	@sudo mandb -q
 
@@ -78,7 +78,7 @@ package: dist
 	@sed -i "s/MAJOR.MINOR/$(DIST_VERSION)/" $(PACKAGE_DIR)/DEBIAN/control
 	@sed -i "s/ARCHITECTURE/$(DEB_BUILD_ARCH)/" $(PACKAGE_DIR)/DEBIAN/control
 	@mkdir -p $(PACKAGE_DIR)/usr/share/man/man1/
-	@gzip -c doc/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
+	@gzip -c --best docs/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
 	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
 	@find $(PACKAGE_DIR)/ -type f -exec chmod 644 {} +
 	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
