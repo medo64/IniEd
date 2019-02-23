@@ -1,9 +1,10 @@
-### IniEd ###
+![IniEd](ICON.png) IniEd
+========================
 
 Command line .ini file editor.
 
 
-### Goals ###
+## Goals ##
 
 This project has the following goals:
 
@@ -13,7 +14,7 @@ This project has the following goals:
   without unnecessary corrections.
 
 
-### Usage ###
+## Usage ##
 
     inied [OPTIONS] <file>
 
@@ -44,72 +45,72 @@ This project has the following goals:
 | 255       | Argument error     |
 
 
-### Examples ###
+## Examples ##
 
-#### Showing value ####
+### Showing value ###
 
 To show just the value, we need to specify `--section`, `--key`, and `--print`.
 
     inied --section mysqld --key key_buffer --print  examples/my.cnf
 
-#### Editing value ####
+### Editing value ###
 
 To edit key to a particular value, you need to specify `--section`, `--key`, and
 `--edit`. If value is not present it will be appended to the end of section.
 
     inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
 
-#### Changing value ####
+### Changing value ###
 
 To change key to a particular value, you need to specify `--section`, `--key`,
 and `--change`. If value is not present, nothing will happen.
 
     inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
 
-#### Appending value ####
+### Appending value ###
 
 To append key with a particular value, you need to specify `--section`, `--key`,
 and `--append`. Value will be appended to the end of section.
 
     inied --section mysqld --key key_buffer --edit 200M  examples/my.cnf
 
-#### Deleting key ####
+### Deleting key ###
 
 To delete the key, one has to specify `--section`, `key`, and `--delete`.
 
     inied --section mysqld --key key_buffer --delete  examples/my.cnf
 
-#### Deleting section ####
+### Deleting section ###
 
 To delete the whole section, one has to specify only `--section` and `--delete`.
 
     inied --section mysqld --delete  examples/my.cnf
 
-#### Showing section ####
+### Showing section ###
 
 To show a single section, one has to specify only `--section`.
 
     inied --section mysqld  examples/my.cnf
 
-#### Pretty print ####
+### Pretty print ###
 
 To clean up output, one can use `--pretty-print`.
 
     inied --pretty-print  examples/my.cnf
 
-#### Removing comments ####
+### Removing comments ###
 
 To remove all comments, one can use `--no-comments`.
 
     inied --no-comments  examples/my.cnf
 
-#### In-place changes ####
+### In-place changes ###
 
 To do all those changes directly to a file, one can use `--in-place`.
 
     inied --pretty-print --in-place  examples/my.cnf
 
-#### Chaining calls ####
+### Chaining calls ###
 
 As `inied` supports reading from standard input and writing to standard output,
 multiple calls can be chained together.
