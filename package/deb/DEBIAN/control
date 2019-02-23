@@ -1,9 +1,10 @@
-Package:        IniEd
+Package:        inied
 Version:        MAJOR.MINOR
 Architecture:   ARCHITECTURE
 Maintainer:     Josip Medved <jmedved@jmedved.com>
 Homepage:       https://www.medo64.com/inied/
 Description:    Command line .ini file editor.
+ Allows for filtering, modifying, and cleanup of files in .ini format.
 Section:        utils
 Priority:       optional
 Depends:        gnupg2
