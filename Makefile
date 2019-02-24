@@ -99,4 +99,5 @@ package: dist
 	@fakeroot dpkg-deb --build $(PACKAGE_DIR)/ > /dev/null
 	@cp /tmp/$(PACKAGE_NAME).deb dist/
 	@$(RM) -r $(PACKAGE_DIR)/
+	-@lintian dist/$(PACKAGE_NAME).deb
 	@echo Output at dist/$(PACKAGE_NAME).deb

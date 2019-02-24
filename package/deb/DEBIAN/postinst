@@ -1,6 +1,9 @@
 #!/bin/bash
+set -ex
 
 chmod +x /usr/bin/inied
+
+mandb -q
 
 echo "deb https://medo64.com/repositories/deb stable main" > /etc/apt/sources.list.d/medo64.list
 echo "-----BEGIN PGP PUBLIC KEY BLOCK-----
@@ -22,7 +25,5 @@ pXF542bTCX+bXOfPWbdl/mnIBRKdsNGNu/FbXTQ4gEmXQwmki5YL8kRwbBloxuH2
 5VcfjRkkgrnxUy4S
 =gY4j
 -----END PGP PUBLIC KEY BLOCK-----" | apt-key add -
-
-mandb -q
 
 exit 0

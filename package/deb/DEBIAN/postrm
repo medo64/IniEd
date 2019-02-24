@@ -1,12 +1,5 @@
 #!/bin/bash
-
-if [ "$1" == "remove" ]
-then
-    if [ -f "/usr/bin/inied" ]
-    then
-        rm "/usr/bin/inied"
-    fi
-fi
+set -e
 
 mandb -q
 
