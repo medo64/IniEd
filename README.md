@@ -1,5 +1,5 @@
-![IniEd](ICON.png) IniEd
-========================
+[![IniEd](ICON.png)](https://www.medo64.com/inied/)  IniEd
+==========================================================
 
 Command line .ini file editor.
 
