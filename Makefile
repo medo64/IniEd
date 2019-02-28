@@ -78,7 +78,7 @@ package: dist
 	@sed -i "s/MAJOR.MINOR/$(DIST_VERSION)/" $(PACKAGE_DIR)/DEBIAN/control
 	@sed -i "s/ARCHITECTURE/$(DEB_BUILD_ARCH)/" $(PACKAGE_DIR)/DEBIAN/control
 	@mkdir -p $(PACKAGE_DIR)/usr/share/doc/inied/
-	@cp LICENSE.md $(PACKAGE_DIR)/usr/share/doc/inied/copyright
+	@cp package/deb/copyright $(PACKAGE_DIR)/usr/share/doc/inied/copyright
 	@cp CHANGES.md build/changelog
 	@sed -i '/^$$/d' build/changelog
 	@sed -i '/## Release Notes ##/d' build/changelog
