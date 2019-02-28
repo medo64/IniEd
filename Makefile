@@ -27,9 +27,9 @@ distclean: clean
 install: bin/inied
 	@sudo install -d $(DESTDIR)/$(PREFIX)/bin/
 	@sudo install bin/inied $(DESTDIR)/$(PREFIX)/bin/
-	@$(RM) -r build/man/
 	@mkdir -p build/man/
-	@gzip -cn --best docs/man/inied.1 > build/man/inied.1.gz
+	@sed 's/MAJOR.MINOR//g' docs/man/inied.1 > build/man/inied.1
+	@gzip -cn --best build/man/inied.1 > build/man/inied.1.gz
 	@sudo install -m 644 build/man/inied.1.gz /usr/share/man/man1/
 	@sudo mandb -q
 
@@ -88,8 +88,10 @@ package: dist
 	@echo >> build/changelog
 	@echo ' -- Josip Medved <jmedved@jmedved.com>  $(shell date -R)' >> build/changelog
 	@gzip -cn --best build/changelog > $(PACKAGE_DIR)/usr/share/doc/inied/changelog.gz
+	@mkdir -p build/man/
+	@sed 's/MAJOR.MINOR//g' docs/man/inied.1 > build/man/inied.1
 	@mkdir -p $(PACKAGE_DIR)/usr/share/man/man1/
-	@gzip -cn --best docs/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
+	@gzip -cn --best build/man/inied.1 > $(PACKAGE_DIR)/usr/share/man/man1/inied.1.gz
 	@find $(PACKAGE_DIR)/ -type d -exec chmod 755 {} +
 	@find $(PACKAGE_DIR)/ -type f -exec chmod 644 {} +
 	@chmod 755 $(PACKAGE_DIR)/DEBIAN/p*inst $(PACKAGE_DIR)/DEBIAN/p*rm
