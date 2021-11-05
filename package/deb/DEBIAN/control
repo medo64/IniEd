@@ -7,4 +7,4 @@ Description:    Command line .ini file editor.
  Allows for filtering, modifying, and cleanup of files in .ini format.
 Section:        utils
 Priority:       optional
-Depends:        libc6, gnupg2
+Depends:        libc6, gnupg2, debconf

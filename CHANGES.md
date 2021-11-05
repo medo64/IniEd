@@ -1,5 +1,9 @@
 ## Release Notes ##
 
+### 0.1.2 [2021-11-04] ###
+
+* Updated deb package
+
 ### 0.1.1 [2019-02-23] ###
 
 * Packaging improvements
